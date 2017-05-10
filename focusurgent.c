@@ -10,6 +10,8 @@ focusurgent(const Arg *arg) {
 			view(&a);
 			focus(c);
 		}
-	}
+	} else {
+        view(&((Arg){0}));
+    }
 }
 
