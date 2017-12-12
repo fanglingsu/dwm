@@ -180,7 +180,7 @@ drw_fontset_free(Fnt *font)
 }
 
 void
-drw_clr_create(Drw *drw, XftColor *dest, const char *clrname)
+drw_clr_create(Drw *drw, Clr *dest, const char *clrname)
 {
 	if (!drw || !dest || !clrname)
 		return;
@@ -193,14 +193,14 @@ drw_clr_create(Drw *drw, XftColor *dest, const char *clrname)
 
 /* Wrapper to create color schemes. The caller has to call free(3) on the
  * returned color scheme when done using it. */
-Scm
+Clr *
 drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount)
 {
 	size_t i;
-	Scm ret;
+	Clr *ret;
 
 	/* need at least two colors for a scheme */
-	if (!drw || !clrnames || clrcount < 2 || !(ret = ecalloc(clrcount, sizeof(XftColor))))
+	if (!drw || !clrnames || clrcount < 2 || !(ret = ecalloc(clrcount, sizeof(Clr))))
 		return NULL;
 
 	for (i = 0; i < clrcount; i++)
@@ -216,7 +216,7 @@ drw_setfontset(Drw *drw, Fnt *set)
 }
 
 void
-drw_setscheme(Drw *drw, Scm scm)
+drw_setscheme(Drw *drw, Clr *scm)
 {
 	if (drw)
 		drw->scheme = scm;
@@ -245,7 +245,7 @@ drw_get_width(Drw *drw, int numcolors, const char *text)
 }
 
 void
-drw_colored_text(Drw *drw, Scm *scheme, int numcolors, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, char *text)
+drw_colored_text(Drw *drw, Clr **scm, int numcolors, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, char *text)
 {
 	if (!drw || !drw->fonts || !drw->scheme)
 		return;
@@ -262,7 +262,7 @@ drw_colored_text(Drw *drw, Scm *scheme, int numcolors, int x, int y, unsigned in
 		if (i)
 			x = drw_text(drw, x, y, w, h, lpad, buf, 0);
 		*ptr = c;
-		drw_setscheme(drw, scheme[c-1]);
+		drw_setscheme(drw, scm[c-1]);
 		buf = ++ptr;
 	}
 	drw_text(drw, x, y, w, h, lpad, buf, 0);
