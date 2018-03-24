@@ -226,19 +226,19 @@ int
 drw_get_width(Drw *drw, int numcolors, const char *text)
 {
 	int i;
+	size_t len;
 	Fnt *curfont = drw->fonts;
 	int w = drw_text(drw, 0, 0, 0, 0, 0, text, 0);
 	unsigned int ew;
 
 	drw_font_getexts(curfont, "\x01", 1,  &ew, NULL);
 
-	for (i = 0; i < strlen(text); i++) {
+	for (i = 0, len = strlen(text); i < len; i++) {
 		if (text[i] > 0 && text[i] <= numcolors) {
 			/* we found a color code
 			 * drw_text counted it as a normal character and added one character's width
 			 * we aren't going to render this character, so we remove one character's width */
 			w -= ew;
-
 		}
 	}
 	return w;
