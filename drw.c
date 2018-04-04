@@ -225,23 +225,21 @@ drw_setscheme(Drw *drw, Clr *scm)
 int
 drw_get_width(Drw *drw, int numcolors, const char *text)
 {
-	int i;
+	int i, j;
 	size_t len;
-	Fnt *curfont = drw->fonts;
-	int w = drw_text(drw, 0, 0, 0, 0, 0, text, 0);
-	unsigned int ew;
+	char stext[256];
 
-	drw_font_getexts(curfont, "\x01", 1,  &ew, NULL);
-
-	for (i = 0, len = strlen(text); i < len; i++) {
-		if (text[i] > 0 && text[i] <= numcolors) {
-			/* we found a color code
-			 * drw_text counted it as a normal character and added one character's width
-			 * we aren't going to render this character, so we remove one character's width */
-			w -= ew;
+	/* Remove colors codes from text to get it real width */
+	for (i = 0, j = 0, len = strlen(text); i < len; i++) {
+		/* Copy only none color codes. */
+		if (text[i] <= 0 || text[i] > numcolors) {
+			stext[j] = text[i];
+			j++;
 		}
 	}
-	return w;
+	stext[j] = '\0';
+
+	return drw_text(drw, 0, 0, 0, 0, 0, stext, 0);
 }
 
 void
